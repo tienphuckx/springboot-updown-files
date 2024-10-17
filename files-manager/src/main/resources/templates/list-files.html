@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            padding: 20px;
+        }
+
+        .file-list-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        .download-btn {
+            padding: 8px 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #555;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="file-list-container">
+    <h1>File List</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>File Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="fileName : ${files}">
+            <td th:text="${fileName}"></td>
+            <td><button class="download-btn" th:data-filename="${fileName}">Download</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.download-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const fileName = this.getAttribute('data-filename');
+            window.location.href = '/download-file-faster?file=' + encodeURIComponent(fileName);
+        });
+    });
+</script>
+
+</body>
+</html>

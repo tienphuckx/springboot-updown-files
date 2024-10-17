@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+        }
+
+        .upload-container {
+            background: linear-gradient(145deg, #ffffff, #e0e0e0);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #555;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: green;
+            font-size: 14px;
+        }
+
+        .error {
+            margin-top: 20px;
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="upload-container">
+    <h1>Upload File</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="file" name="file" required><br><br>
+        <label for="newFileName">Rename File (optional):</label><br>
+        <input type="text" id="newFileName" placeholder="New file name"><br><br>
+        <button type="submit" class="upload-btn">Upload</button>
+    </form>
+
+    <div id="message" class="message"></div>
+    <div id="error" class="error"></div>
+</div>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const messageDiv = document.getElementById('message');
+    const errorDiv = document.getElementById('error');
+    const fileInput = document.getElementById('file');
+    const newFileNameInput = document.getElementById('newFileName');
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData();
+
+        // Get the file from the file input
+        const file = fileInput.files[0];
+        let newFileName = newFileNameInput.value.trim();
+
+        if (!file) {
+            errorDiv.innerHTML = 'Please select a file to upload!';
+            return;
+        }
+
+        // Rename the file if a new name is provided, maintaining the extension
+        if (newFileName) {
+            const fileExtension = file.name.split('.').pop();
+            newFileName = `${newFileName}.${fileExtension}`;
+        } else {
+            newFileName = file.name; // Keep the original name if no new name is provided
+        }
+
+        // Add the renamed file to the FormData object
+        formData.append('file', new File([file], newFileName));
+
+        // Clear previous messages and errors
+        messageDiv.innerHTML = '';
+        errorDiv.innerHTML = '';
+
+        try {
+            const response = await fetch('/upload-file', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                messageDiv.innerHTML = 'File uploaded successfully!';
+            } else {
+                errorDiv.innerHTML = 'File upload failed!';
+            }
+        } catch (error) {
+            errorDiv.innerHTML = 'An error occurred: ' + error.message;
+        }
+    });
+</script>
+
+</body>
+</html>
